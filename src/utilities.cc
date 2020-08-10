@@ -179,7 +179,7 @@ bool is_default_thread() {
     // thread
     return true;
   } else {
-    return pthread_equal(pthread_self(), g_main_thread_id);
+    return true; //pthread_equal(pthread_self(), g_main_thread_id);
   }
 }
 
@@ -270,7 +270,7 @@ pid_t GetTID() {
   return GetCurrentThreadId();
 #else
   // If none of the techniques above worked, we use pthread_self().
-  return (pid_t)(uintptr_t)pthread_self();
+  return 0; //(pid_t)(uintptr_t)pthread_self();
 #endif
 }
 
@@ -326,7 +326,7 @@ void InitGoogleLoggingUtilities(const char* argv0) {
   if (!slash)  slash = strrchr(argv0, '\\');
 #endif
   g_program_invocation_short_name = slash ? slash + 1 : argv0;
-  g_main_thread_id = pthread_self();
+  g_main_thread_id = 0;//pthread_self();
 
 #ifdef HAVE_STACKTRACE
   InstallFailureFunction(&DumpStackTraceAndExit);

@@ -183,6 +183,7 @@ endif
 
 lib_LTLIBRARIES += libglog.la
 libglog_la_SOURCES = $(gloginclude_HEADERS) \
+                       src/broken_syscalls.cc \
                        src/logging.cc src/raw_logging.cc src/vlog_is_on.cc \
                        src/utilities.cc src/utilities.h \
                        src/demangle.cc src/demangle.h \

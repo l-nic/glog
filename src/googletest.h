@@ -277,7 +277,7 @@ class CapturedStream {
 
   ~CapturedStream() {
     if (uncaptured_fd_ != -1) {
-      CHECK(close(uncaptured_fd_) != -1);
+     // CHECK(close(uncaptured_fd_) != -1);
     }
   }
 
@@ -285,7 +285,7 @@ class CapturedStream {
   void Capture() {
     // Keep original stream for later
     CHECK(uncaptured_fd_ == -1) << ", Stream " << fd_ << " already captured!";
-    uncaptured_fd_ = dup(fd_);
+    //uncaptured_fd_ = dup(fd_);
     CHECK(uncaptured_fd_ != -1);
 
     // Open file to save stream to
@@ -295,17 +295,17 @@ class CapturedStream {
     CHECK(cap_fd != -1);
 
     // Send stdout/stderr to this file
-    fflush(NULL);
-    CHECK(dup2(cap_fd, fd_) != -1);
-    CHECK(close(cap_fd) != -1);
+    //fflush(NULL);
+    //CHECK(dup2(cap_fd, fd_) != -1);
+    //CHECK(close(cap_fd) != -1);
   }
 
   // Remove output redirection
   void StopCapture() {
     // Restore original stream
     if (uncaptured_fd_ != -1) {
-      fflush(NULL);
-      CHECK(dup2(uncaptured_fd_, fd_) != -1);
+      //fflush(NULL);
+      //CHECK(dup2(uncaptured_fd_, fd_) != -1);
     }
   }
 
@@ -542,7 +542,7 @@ class Thread {
     pthread_join(th_, NULL);
   }
 #else
-# error No thread implementation.
+// # error No thread implementation.
 #endif
 
  protected:
@@ -564,7 +564,7 @@ class Thread {
 
 static inline void SleepForMilliseconds(int t) {
 #ifndef OS_WINDOWS
-  usleep(t * 1000);
+  //usleep(t * 1000);
 #else
   Sleep(t);
 #endif
@@ -576,21 +576,21 @@ void (*g_new_hook)() = NULL;
 
 _END_GOOGLE_NAMESPACE_
 
-void* operator new(size_t size) throw(std::bad_alloc) {
+void* operator new(size_t size) /*throw(std::bad_alloc)*/ {
   if (GOOGLE_NAMESPACE::g_new_hook) {
     GOOGLE_NAMESPACE::g_new_hook();
   }
   return malloc(size);
 }
 
-void* operator new[](size_t size) throw(std::bad_alloc) {
+void* operator new[](size_t size) /*throw(std::bad_alloc)*/ {
   return ::operator new(size);
 }
 
-void operator delete(void* p) throw() {
+void operator delete(void* p) /*throw()*/ {
   free(p);
 }
 
-void operator delete[](void* p) throw() {
+void operator delete[](void* p) /*throw()*/ {
   ::operator delete(p);
 }

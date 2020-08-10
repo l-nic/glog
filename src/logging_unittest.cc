@@ -614,12 +614,12 @@ static void GetFiles(const string& pattern, vector<string>* files) {
   files->clear();
 #if defined(HAVE_GLOB_H)
   glob_t g;
-  const int r = glob(pattern.c_str(), 0, NULL, &g);
-  CHECK((r == 0) || (r == GLOB_NOMATCH)) << ": error matching " << pattern;
+  const int r = 0;//glob(pattern.c_str(), 0, NULL, &g);
+  // CHECK((r == 0) || (r == GLOB_NOMATCH)) << ": error matching " << pattern;
   for (size_t i = 0; i < g.gl_pathc; i++) {
     files->push_back(string(g.gl_pathv[i]));
   }
-  globfree(&g);
+ // globfree(&g);
 #elif defined(OS_WINDOWS)
   WIN32_FIND_DATAA data;
   HANDLE handle = FindFirstFileA(pattern.c_str(), &data);
@@ -898,7 +898,7 @@ class TestLogSinkWriter : public Thread {
 
   TestLogSinkWriter() : should_exit_(false) {
     SetJoinable(true);
-    Start();
+    //Start();
   }
 
   // Just buffer it (can't use LOG() here).
@@ -987,13 +987,13 @@ class TestWaitingLogSink : public LogSink {
  public:
 
   TestWaitingLogSink() {
-    tid_ = pthread_self();  // for thread-specific behavior
+    tid_ = 0;//pthread_self();  // for thread-specific behavior
     AddLogSink(this);
   }
   ~TestWaitingLogSink() {
     RemoveLogSink(this);
-    writer_.Stop();
-    writer_.Join();
+    //writer_.Stop();
+    //writer_.Join();
   }
 
   // (re)define LogSink interface
@@ -1005,14 +1005,14 @@ class TestWaitingLogSink : public LogSink {
     // Push it to Writer thread if we are the original logging thread.
     // Note: Something like ThreadLocalLogSink is a better choice
     //       to do thread-specific LogSink logic for real.
-    if (pthread_equal(tid_, pthread_self())) {
+    //if (pthread_equal(tid_, pthread_self())) {
       writer_.Buffer(ToString(severity, base_filename, line,
                               tm_time, message, message_len));
-    }
+    //}
   }
   virtual void WaitTillSent() {
     // Wait for Writer thread if we are the original logging thread.
-    if (pthread_equal(tid_, pthread_self()))  writer_.Wait();
+    ///*if (pthread_equal(tid_, pthread_self()))*/  writer_.Wait();
   }
 
  private:

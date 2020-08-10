@@ -191,7 +191,7 @@ GLOG_DEFINE_string(log_backtrace_at, "",
 #include <BaseTsd.h>
 #define ssize_t SSIZE_T
 #endif
-static ssize_t pread(int fd, void* buf, size_t count, off_t offset) {
+extern ssize_t pread(int fd, void* buf, size_t count, off_t offset) {
   off_t orig_offset = lseek(fd, 0, SEEK_CUR);
   if (orig_offset == (off_t)-1)
     return -1;
@@ -941,18 +941,18 @@ bool LogFileObject::CreateLogfile(const string& time_pid_string) {
     // Make the symlink be relative (in the same dir) so that if the
     // entire log directory gets relocated the link is still valid.
     const char *linkdest = slash ? (slash + 1) : filename;
-    if (symlink(linkdest, linkpath.c_str()) != 0) {
-      // silently ignore failures
-    }
+    // if (symlink(linkdest, linkpath.c_str()) != 0) {
+    //   // silently ignore failures
+    // }
 
     // Make an additional link to the log file in a place specified by
     // FLAGS_log_link, if indicated
     if (!FLAGS_log_link.empty()) {
       linkpath = FLAGS_log_link + "/" + linkname;
-      unlink(linkpath.c_str());                  // delete old one if it exists
-      if (symlink(filename, linkpath.c_str()) != 0) {
-        // silently ignore failures
-      }
+      //unlink(linkpath.c_str());                  // delete old one if it exists
+      // if (symlink(filename, linkpath.c_str()) != 0) {
+      //   // silently ignore failures
+      // }
     }
 #endif
   }
@@ -1716,12 +1716,13 @@ static bool SendEmailInternal(const char*dest, const char *subject,
 
     string cmd =
         FLAGS_logmailer + " -s\"" + subject + "\" " + dest;
-    FILE* pipe = popen(cmd.c_str(), "w");
+    //FILE* pipe = popen(cmd.c_str(), "w");
     if (pipe != NULL) {
       // Add the body if we have one
-      if (body)
-        fwrite(body, sizeof(char), strlen(body), pipe);
-      bool ok = pclose(pipe) != -1;
+      //if (body)
+        //fwrite(body, sizeof(char), strlen(body), pipe);
+      //bool ok = pclose(pipe) != -1;
+      bool ok = false;
       if ( !ok ) {
         if ( use_logging ) {
           LOG(ERROR) << "Problems sending mail to " << dest << ": "
@@ -1834,11 +1835,11 @@ void GetExistingTempDirectories(vector<string>* list) {
   while( i_dir != list->end() ) {
     // zero arg to access means test for existence; no constant
     // defined on windows
-    if ( access(i_dir->c_str(), 0) ) {
-      i_dir = list->erase(i_dir);
-    } else {
-      ++i_dir;
-    }
+    // if ( access(i_dir->c_str(), 0) ) {
+    //   i_dir = list->erase(i_dir);
+    // } else {
+    //   ++i_dir;
+    // }
   }
 }
 
@@ -1864,11 +1865,11 @@ void TruncateLogFile(const char *path, int64 limit, int64 keep) {
       // all of base/...) with -D_FILE_OFFSET_BITS=64 but that's
       // rather scary.
       // Instead just truncate the file to something we can manage
-      if (truncate(path, 0) == -1) {
-        PLOG(ERROR) << "Unable to truncate " << path;
-      } else {
-        LOG(ERROR) << "Truncated " << path << " due to EFBIG error";
-      }
+      // if (truncate(path, 0) == -1) {
+      //   PLOG(ERROR) << "Unable to truncate " << path;
+      // } else {
+      //   LOG(ERROR) << "Truncated " << path << " due to EFBIG error";
+      // }
     } else {
       PLOG(ERROR) << "Unable to open " << path;
     }
@@ -1909,9 +1910,9 @@ void TruncateLogFile(const char *path, int64 limit, int64 keep) {
   // Truncate the remainder of the file. If someone else writes to the
   // end of the file after our last read() above, we lose their latest
   // data. Too bad ...
-  if (ftruncate(fd, write_offset) == -1) {
-    PLOG(ERROR) << "Unable to truncate " << path;
-  }
+  // if (ftruncate(fd, write_offset) == -1) {
+  //   PLOG(ERROR) << "Unable to truncate " << path;
+  // }
 
  out_close_fd:
   close(fd);
